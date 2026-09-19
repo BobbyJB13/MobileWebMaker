@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Web Maker - Ultimate Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root {
+            --bg: #0b0f19; --surf: #131b2e; --surf-var: #1e293b;
+            --prim: #3b82f6; --prim-glow: rgba(59, 130, 246, 0.4); --on-prim: #ffffff; 
+            --text: #f8fafc; --text-sub: #94a3b8; --success: #10b981; --accent: #8b5cf6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; font-size: 15px; padding-bottom: 60px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .section-box { animation: fadeIn 0.4s ease-in-out; }
+        header { background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(12px); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1e293b; position: sticky; top: 0; z-index: 100; }
+        header h1 { font-size: 1.15rem; background: linear-gradient(45deg, var(--prim), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+        .container { width: 100%; max-width: 650px; margin: 0 auto; padding: 16px; }
+        .card { background: var(--surf); border-radius: 20px; padding: 22px; margin-bottom: 20px; border: 1px solid var(--surf-var); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        h2 { color: var(--prim); font-size: 1.2rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        p { color: var(--text-sub); font-size: 0.95rem; margin-bottom: 15px; line-height: 1.5; }
+        label { display: block; font-size: 0.85rem; color: var(--text-sub); margin-bottom: 6px; font-weight: 600; }
+        input, select { width: 100%; padding: 12px; background: var(--surf-var); border: 1px solid #334155; color: var(--text); border-radius: 12px; margin-bottom: 15px; outline: none; font-size: 0.95rem; }
+        input:focus, select:focus { border-color: var(--prim); box-shadow: 0 0 10px var(--prim-glow); }
+        textarea { width: 100%; min-height: 280px; background: #07090e; color: #34d399; border: 1px solid #334155; border-radius: 12px; padding: 14px; font-family: monospace; font-size: 0.85rem; outline: none; resize: vertical; line-height: 1.5; margin-bottom: 10px; }
+        textarea:focus { border-color: var(--prim); }
+        .btn { background: linear-gradient(135deg, var(--prim), #2563eb); color: var(--on-prim); border: none; padding: 14px 20px; border-radius: 50px; font-weight: 700; width: 100%; cursor: pointer; font-size: 1rem; text-align: center; box-shadow: 0 4px 20px var(--prim-glow); transition: transform 0.1s; display: block; text-decoration: none; }
+        .btn:active { transform: scale(0.98); }
+        .btn-secondary { background: var(--surf-var); color: var(--text); border: 1px solid #334155; padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer; margin-bottom: 10px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-secondary:hover { background: #273548; }
+        .toolbar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+        .tool-btn { background: #1e293b; color: var(--text-sub); border: 1px solid #334155; padding: 8px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; text-align: center; }
+        .tool-btn:hover { color: var(--text); border-color: var(--prim); }
+        .checkbox-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .checkbox-label { background: var(--surf-var); padding: 12px; border-radius: 10px; border: 1px solid #334155; display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; color: var(--text); }
+        .checkbox-label input { width: auto; margin: 0; }
+        .browser-toolbar { display: flex; align-items: center; gap: 8px; background: var(--surf-var); padding: 8px 12px; border-radius: 12px 12px 0 0; border: 1px solid #334155; border-bottom: none; }
+        .browser-address { flex: 1; background: var(--bg); border: 1px solid #334155; color: var(--text-sub); padding: 6px 10px; border-radius: 6px; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        #embedded-browser { width: 100%; height: 400px; border: 1px solid #334155; background: #fff; border-radius: 0 0 12px 12px; }
+        .stats-bar { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-sub); margin-bottom: 10px; padding: 0 4px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⚡ Mobile Web Maker</h1>
+        <span style="font-size:0.8rem; color:var(--success); font-weight:bold;">● Komplett-Version</span>
+    </header>
+    <div class="container">
+        <section id="step-tutorial" class="card section-box">
+            <h2>📖 1. Anleitung & Willkommen</h2>
+            <p>Erstelle professionelle Webseiten direkt auf deinem Smartphone. Folge den Schritten von oben nach unten!</p>
+            <a href="#step-setup" class="btn">🚀 Jetzt starten</a>
+        </section>
+        <section id="step-setup" class="card section-box">
+            <h2>⚙️ 2. Projekt-Setup & Medien</h2>
+            <label>Projekt-Name:</label>
+            <input type="text" id="proj-name" placeholder="z.B. MeinTraumProjekt">
+            <label>Bild / Logo hochladen (Galerie oder Dateien):</label>
+            <input type="file" id="image-file-input" accept="image/*" style="padding: 10px;">
+            <label>Programmiersprachen & Komponenten:</label>
+            <div class="checkbox-group">
+                <label class="checkbox-label"><input type="checkbox" id="lang-html" checked> HTML5 Kern</label>
+                <label class="checkbox-label"><input type="checkbox" id="lang-css" checked> CSS3 Styling</label>
+                <label class="checkbox-label"><input type="checkbox" id="lang-js" checked> JavaScript Logic</label>
+                <label class="checkbox-label"><input type="checkbox" id="lang-responsive" checked> Mobile Responsive</label>
+            </div>
+            <button class="btn" onclick="buildInitialCode()">✨ Grundgerüst generieren</button>
+        </section>
+        <section id="step-editor" class="card section-box">
+            <h2>💻 3. High-End Code Editor</h2>
+            <div class="toolbar-grid">
+                <div class="tool-btn" onclick="insertSnippet('style')">🎨 CSS Style</div>
+                <div class="tool-btn" onclick="insertSnippet('script')">⚡ JS Script</div>
+                <div class="tool-btn" onclick="insertSnippet('flexbox')">📦 Flexbox</div>
+                <div class="tool-btn" onclick="insertSnippet('button')">🔘 Button</div>
+                <div class="tool-btn" onclick="insertSnippet('card')">🎴 UI Card</div>
+                <div class="tool-btn" onclick="insertSnippet('alert')">💬 Alert</div>
+            </div>
+            <textarea id="code-editor" placeholder="Schreibe oder optimiere hier deinen Code..." oninput="updateStats()"></textarea>
+            <div class="stats-bar">
+                <span id="stat-lines">Zeilen: 0</span>
+                <span id="stat-chars">Zeichen: 0</span>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-secondary" onclick="refreshBrowser()">🔄 Vorschau aktualisieren</button>
+                <button class="btn-secondary" onclick="copyCode()">📋 Code kopieren</button>
+            </div>
+        </section>
+        <section id="step-preview" class="card section-box">
+            <h2>🌐 4. Live-Vorschau Browser</h2>
+            <div class="browser-toolbar">
+                <span style="color:var(--success);">●</span>
+                <div class="browser-address">local://sandbox/mobile-preview.html</div>
+                <button style="background:var(--surf-var); color:var(--prim); border:none; padding:4px 8px; border-radius:4px; font-size:0.75rem; cursor:pointer;" onclick="refreshBrowser()">Neu laden</button>
+            </div>
+            <iframe id="embedded-browser"></iframe>
+        </section>
+        <section id="step-templates" class="card section-box">
+            <h2>📋 5. Sofort-Vorlagen</h2>
+            <button class="btn-secondary" onclick="loadTemplate('game')">🎮 Arcade Klicker-Spiel</button>
+            <button class="btn-secondary" onclick="loadTemplate('todo')">📝 Cyber ToDo-App</button>
+            <button class="btn-secondary" onclick="loadTemplate('calculator')">🧮 Taschenrechner</button>
+            <button class="btn-secondary" onclick="loadTemplate('dashboard')">📊 Analytics Dashboard</button>
+        </section>
+        <section id="step-export" class="card section-box">
+            <h2>📦 6. Export & Deployment</h2>
+            <label>Dateiname:</label>
+            <input type="text" id="filename-input" value="index.html">
+            <button class="btn" onclick="downloadZIP()">📥 Als .ZIP Paket herunterladen</button>
+        </section>
+        <section id="step-archive" class="card section-box">
+            <h2>📁 7. Gespeicherte Webseiten (Archiv)</h2>
+            <div id="projects-list" style="margin-bottom:15px;">
+                <p style="color:var(--text-sub); font-size:0.9rem;">Keine gespeicherten Projekte im Archiv.</p>
+            </div>
+            <button class="btn-secondary" onclick="saveCurrentProject()">💾 Aktuelles Projekt im Archiv sichern</button>
+        </section>
+    </div>
+    <script>
+        let uploadedImageBase64 = "";
+        document.getElementById('image-file-input').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    uploadedImageBase64 = event.target.result;
+                    alert('Bild erfolgreich geladen!');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        window.onload = function() {
+            loadOldProjects();
+            refreshBrowser();
+            updateStats();
+        };
+        function updateStats() {
+            const code = document.getElementById('code-editor').value;
+            const lines = code.split('\n').length;
+            const chars = code.length;
+            document.getElementById('stat-lines').innerText = `Zeilen: ${lines}`;
+            document.getElementById('stat-chars').innerText = `Zeichen: ${chars}`;
+        }
+        function insertSnippet(type) {
+            const editor = document.getElementById('code-editor');
+            let snippet = "";
+            if(type === 'style') snippet = '<style>\n    body { background: #0f172a; color: #fff; font-family: sans-serif; padding: 20px; }\n</style>\n';
+            if(type === 'script') snippet = '<script>\n    console.log("Script aktiv!");\n<\/script>\n';
+            if(type === 'flexbox') snippet = '<div style="display:flex; justify-content:center; align-items:center; height:100vh;">\n    <h1>Zentriert</h1>\n</div>\n';
+            if(type === 'button') snippet = '<button style="background:#3b82f6; color:#fff; border:none; padding:12px 24px; border-radius:8px; font-weight:bold; cursor:pointer;">Klick mich</button>\n';
+            if(type === 'card') snippet = '<div style="background:#1e293b; padding:20px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.3);">\n    <h3>Titel</h3>\n    <p>Inhalt...</p>\n</div>\n';
+            if(type === 'alert') snippet = 'alert("Hallo!");\n';
+            const start = editor.selectionStart;
+            editor.value = editor.value.substring(0, start) + snippet + editor.value.substring(editor.selectionEnd);
+            updateStats();
+            refreshBrowser();
+        }
+        function buildInitialCode() {
+            const name = document.getElementById('proj-name').value.trim() || "MeinProjekt";
+            const useHtml = document.getElementById('lang-html').checked;
+            const useCss = document.getElementById('lang-css').checked;
+            const useJs = document.getElementById('lang-js').checked;
+            const useResp = document.getElementById('lang-responsive').checked;
+            let code = `<!DOCTYPE html>\n<html lang="de">\n<head>\n    <meta charset="UTF-8">\n`;
+            if(useResp) code += `    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n`;
+            code += `    <title>${name}</title>\n`;
+            if(useCss) {
+                code += `    <style>\n        :root { --bg: #0f172a; --prim: #3b82f6; --text: #f8fafc; }\n        body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; padding: 30px; text-align: center; }\n        h1 { color: var(--prim); margin-bottom: 15px; }\n        .box { background: #1e293b; padding: 20px; border-radius: 14px; display: inline-block; margin-top: 15px; }\n        img { max-width: 200px; border-radius: 10px; margin-top: 15px; }\n    </style>\n`;
+            }
+            code += `</head>\n<body>\n    <h1>⚡ ${name}</h1>\n    <p>Erstellt mit Mobile Web Maker.</p>\n`;
+            if(uploadedImageBase64) {
+                code += `    <div class="box">\n        <img src="${uploadedImageBase64}" alt="Projekt Bild">\n    </div>\n`;
+            }
+            if(useJs) {
+                code += `    <script>\n        console.log("Projekt ${name} gestartet!");\n    <\/script>\n`;
+            }
+            code += `</body>\n</html>`;
+            document.getElementById('code-editor').value = code;
+            updateStats();
+            refreshBrowser();
+            alert('Grundgerüst generiert!');
+        }
+        function refreshBrowser() {
+            const code = document.getElementById('code-editor').value;
+            const frame = document.getElementById('embedded-browser');
+            const doc = frame.contentDocument || frame.contentWindow.document;
+            doc.open(); doc.write(code); doc.close();
+        }
+        function loadTemplate(type) {
+            let tCode = "";
+            if(type === 'game') {
+                tCode = '<!DOCTYPE html><html><head><style>body{background:#0b0f19;color:#fff;text-align:center;font-family:sans-serif;padding:50px;}button{padding:15px 30px;font-size:20px;background:#3b82f6;color:#fff;border:none;border-radius:12px;cursor:pointer;box-shadow:0 4px 15px rgba(59,130,246,0.4);}</style></head><body><h1>Cyber Klicker</h1><p>Score: <span id="score" style="color:#34d399;font-weight:bold;">0</span></p><br><button onclick="s()">⚡ Energie aufladen</button><script>let p=0;function s(){p++;document.getElementById("score").innerText=p;}<\/script></body></html>';
+            } else if(type === 'todo') {
+                tCode = '<!DOCTYPE html><html><head><style>body{background:#0b0f19;color:#fff;max-width:400px;margin:auto;padding:20px;font-family:sans-serif;}input,button{padding:12px;margin-bottom:10px;width:100%;border-radius:8px;border:1px solid #334155;background:#1e293b;color:#fff;}button{background:#3b82f6;border:none;font-weight:bold;cursor:pointer;}</style></head><body><h2>Cyber ToDos</h2><input id="t" placeholder="Neue Aufgabe..."><button onclick="add()">Hinzufügen</button><ul id="l" style="padding-left:20px;"></ul><script>function add(){let i=document.getElementById("t"),l=document.getElementById("l"),li=document.createElement("li");li.innerText=i.value;l.appendChild(li);i.value="";}<\/script></body></html>';
+            } else if(type === 'calculator') {
+                tCode = '<!DOCTYPE html><html><head><style>body{background:#0b0f19;color:#fff;text-align:center;padding:50px;font-family:sans-serif;}input{width:220px;padding:12px;font-size:18px;margin-bottom:10px;text-align:right;background:#1e293b;border:1px solid #334155;color:#fff;border-radius:8px;}button{width:50px;height:50px;font-size:16px;margin:3px;cursor:pointer;background:#1e293b;color:#fff;border:1px solid #334155;border-radius:8px;}</style></head><body><h2>Taschenrechner</h2><input id="res" readonly><br><button onclick="v(\'1\')">1</button><button onclick="v(\'2\')">2</button><button onclick="v(\'3\')">3</button><button onclick="v(\'+\')">+</button><br><button onclick="calc()">=</button><button onclick="clr()">C</button><script>function v(c){document.getElementById("res").value+=c;}function calc(){let r=document.getElementById("res");r.value=eval(r.value);}function clr(){document.getElementById("res").value="";}<\/script></body></html>';
+            } else if(type === 'dashboard') {
+                tCode = '<!DOCTYPE html><html><head><style>body{background:#0b0f19;color:#fff;font-family:sans-serif;padding:20px;}.card{background:#1e293b;padding:20px;border-radius:14px;margin-bottom:15px;border:1px solid #334155;}</style></head><body><h2>Analytics Dashboard</h2><div class="card"><h3>Besucher</h3><p style="font-size:1.5rem;color:#34d399;font-weight:bold;">12,480</p></div><div class="card"><h3>Umsatz</h3><p style="font-size:1.5rem;color:#3b82f6;font-weight:bold;">$3,420</p></div></body></html>';
+            }
+            document.getElementById('code-editor').value = tCode;
+            updateStats();
+            refreshBrowser();
+            alert('Vorlage geladen!');
+        }
+        function copyCode() {
+            navigator.clipboard.writeText(document.getElementById('code-editor').value);
+            alert('Quelltext kopiert!');
+        }
+        function downloadZIP() {
+            const zip = new JSZip(); 
+            zip.folder("mobile_web_maker_project").file(document.getElementById('filename-input').value, document.getElementById('code-editor').value);
+            zip.generateAsync({type:"blob"}).then(c => { 
+                const a = document.createElement('a'); a.href = URL.createObjectURL(c); a.download = "MobileWebMaker_Projekt.zip"; a.click(); 
+            });
+        }
+        function saveCurrentProject() {
+            const title = prompt("Gib deinem Projekt einen Namen:", "MeinProjekt");
+            if(!title) return;
+            const code = document.getElementById('code-editor').value;
+            let projects = JSON.parse(localStorage.getItem('mwm_projects') || '[]');
+            projects.unshift({ title: title, code: code, date: new Date().toLocaleDateString() });
+            localStorage.setItem('mwm_projects', JSON.stringify(projects));
+            loadOldProjects();
+            alert('Projekt im Archiv gespeichert!');
+        }
+        function loadOldProjects() {
+            const container = document.getElementById('projects-list');
+            let projects = JSON.parse(localStorage.getItem('mwm_projects') || '[]');
+            if(projects.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-sub); font-size:0.9rem;">Keine gespeicherten Projekte im Archiv.</p>';
+                return;
+            }
+            let html = '';
+            projects.forEach((p, index) => {
+                html += `<div style="background:var(--surf-var); padding:12px; border-radius:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid #334155;">
+                    <div><strong>${p.title}</strong><br><small style="color:var(--text-sub);">${p.date}</small></div>
+                    <div style="display:flex; gap:6px;">
+                        <button style="background:var(--prim); color:var(--on-prim); border:none; padding:6px 12px; border-radius:6px; font-weight:600; cursor:pointer;" onclick="loadArchivedProject(${index})">Öffnen</button>
+                        <button style="background:#ef4444; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-weight:600; cursor:pointer;" onclick="deleteArchivedProject(${index})">🗑️</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+        function loadArchivedProject(index) {
+            let projects = JSON.parse(localStorage.getItem('mwm_projects') || '[]');
+            if(projects[index]) {
+                document.getElementById('code-editor').value = projects[index].code;
+                updateStats();
+                refreshBrowser();
+                window.scrollTo({ top: document.getElementById('step-editor').offsetTop - 20, behavior: 'smooth' });
+                alert('Projekt "' + projects[index].title + '" geladen!');
+            }
+        }
+        function deleteArchivedProject(index) {
+            if(!confirm("Projekt wirklich löschen?")) return;
+            let projects = JSON.parse(localStorage.getItem('mwm_projects') || '[]');
+            projects.splice(index, 1);
+            localStorage.setItem('mwm_projects', JSON.stringify(projects));
+            loadOldProjects();
+        }
+    </script>
+</body>
+</html>
